@@ -35,16 +35,16 @@ set modelines=5
 set popt=paper:letter
 
 fun SetupVAM()
-	set runtimepath+=~/.vim/addons/vim-addon-manager
-	" commenting try .. endtry because trace is lost if you use it.
-	" There should be no exception anyway
-	" try
+	" YES, you can customize this vam_install_path path and everything still works!
+	let vam_install_path = expand('$HOME') . '/.vim/addons'
+	exec 'set runtimepath+='.vam_install_path.'/vim-addon-manager'
+
+	if !isdirectory(vam_install_path.'/vim-addon-manager') && 1 == confirm("git clone VAM into ".vam_install_path."?","&Y\n&N")
+		" I'm sorry having to add this reminder. Eventually it'll pay off.
+		call confirm("Remind yourself that most plugins ship with documentation (README*, doc/*.txt). Its your first source of knowledge. If you can't find the info you're looking for in reasonable time ask maintainers to improve documentation")
+		exec '!p='.shellescape(vam_install_path).'; mkdir -p "$p" && cd "$p" && git clone --depth 1 git://github.com/MarcWeber/vim-addon-manager.git'
+	endif
 	call vam#ActivateAddons(['fugitive','Tagbar','surround','Solarized','snipmate-snippets','LaTeX_Box','Command-T','tcomment','EasyMotion','The_NERD_tree','taglist'], {'auto_install' : 0})
-	"call vam#ActivateAddons(['snipmate-snippets','vim-latex','Command-T','Color_Sampler_Pack','The_NERD_tree'], {'auto_install' : 0})
-	" pluginA could be github:YourName see vam#install#RewriteName()
-	" catch /.*/
-	"  echoe v:exception
-	" endtry
 endf
 call SetupVAM()
 " experimental: run after gui has been started (gvim) [3]
