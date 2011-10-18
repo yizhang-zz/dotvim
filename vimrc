@@ -97,10 +97,9 @@ if has("gui_running")
     set guioptions-=T
 else
 	set t_Co=256
-	colorscheme default
 endif
+colorscheme default
 if has("gui_macvim")
-	colorscheme mac_classic
     " set transparency=10
 	" let macvim_hig_shift_movement = 1
     " swipe is broken in Lion
@@ -170,8 +169,8 @@ filetype plugin on
 filetype indent on
 
 au filetype tex set et sw=2 ts=2
-au filetype tex map \gq ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>gq//-1<CR>
-au filetype tex map omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
+au filetype tex map <leader>q ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>gq//-1<CR>
+au filetype tex omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
 
 "let g:tex_flavor = 'pdflatex'
 let g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*'
