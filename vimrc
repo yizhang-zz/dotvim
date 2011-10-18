@@ -1,9 +1,10 @@
 set nocompatible
 set nobackup
-set relativenumber
+" set relativenumber
 set undofile
 set visualbell
 set ttyfast
+set title " change the terminal's title
 
 " set iskeyword-=_
 
@@ -92,13 +93,14 @@ set fileencodings=utf-8,gbk,ucs-bom,latin1
 
 " if &t_Co == 256
 " endif
-colorscheme mac_classic
 if has("gui_running")
     set guioptions-=T
 else
 	set t_Co=256
+	colorscheme default
 endif
 if has("gui_macvim")
+	colorscheme mac_classic
     " set transparency=10
 	" let macvim_hig_shift_movement = 1
     " swipe is broken in Lion
