@@ -1,23 +1,32 @@
 set nocompatible
 set nobackup
 " set relativenumber
-set undofile
+" set undofile
 set visualbell
 set ttyfast
 set title " change the terminal's title
+syntax on
+
+set clipboard=unnamed
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal! g'\"" | endif
+endif
 
 " set iskeyword-=_
 
-set foldmethod=syntax
-set foldnestmax=3
+" set foldmethod=syntax
+" set foldnestmax=3
 
 " use space bar to toggle fold
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':'l')<CR>
 vnoremap <Space> zf
 
 " regex search
-nnoremap / /\v
-vnoremap / /\v
+" nnoremap / /\v
+" vnoremap / /\v
 
 " global subst
 set gdefault
@@ -27,13 +36,27 @@ set wildcharm=<C-Z>
 " nnoremap <F5> :b <C-Z>
 
 nmap <f5> :TagbarToggle<cr>
+let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
 
-nnoremap ; :
+nnoremap \ ,
 let mapleader = ','
 let maplocalleader = ','
-syntax on
+
+map <leader>rc :e $MYVIMRC<cr>
+
+" spell settings
+nmap <silent> <leader>s :set spell!<CR>
+set spelllang=en_us
+
+" map cmd+enter to start new line, like in Textmate
+inoremap <D-CR> <ESC>o
+
 set modelines=5
 set popt=paper:letter
+
+let g:vim_addon_manager = {}
+let g:vim_addon_manager.plugin_sources = {}
+let g:vim_addon_manager.plugin_sources['minibufexpl-improved'] = { 'type':'git', 'url':'git://github.com/fholgado/minibufexpl.vim.git'}
 
 fun SetupVAM()
 	" YES, you can customize this vam_install_path path and everything still works!
@@ -45,7 +68,7 @@ fun SetupVAM()
 		call confirm("Remind yourself that most plugins ship with documentation (README*, doc/*.txt). Its your first source of knowledge. If you can't find the info you're looking for in reasonable time ask maintainers to improve documentation")
 		exec '!p='.shellescape(vam_install_path).'; mkdir -p "$p" && cd "$p" && git clone --depth 1 git://github.com/MarcWeber/vim-addon-manager.git'
 	endif
-	call vam#ActivateAddons(['fugitive','Tagbar','surround','Solarized','snipmate-snippets','LaTeX_Box','Command-T','tcomment','EasyMotion','The_NERD_tree','taglist'], {'auto_install' : 0})
+	call vam#ActivateAddons(['VimOrganizer','LaTeX-Suite_aka_Vim-LaTeX','fugitive','Gundo','Tagbar','surround','ctrlp','snipmate-snippets','tcomment','EasyMotion','The_NERD_tree','supertab','ack','powerline','unimpaired','Indent_Guides','Tabular'], {'auto_install' : 0})
 endf
 call SetupVAM()
 " experimental: run after gui has been started (gvim) [3]
@@ -56,6 +79,17 @@ call SetupVAM()
 "call pathogen#runtime_append_all_bundles()
 "call pathogen#helptags()
 
+" text bubbling: single lines
+" nmap <C-Down> ddp 
+" nmap <C-Up> ddkP
+nmap <C-Up> [e
+nmap <C-Down> ]e
+" text bubbling: multiple lines
+" vmap <C-Up> xkP`[V`]
+" vmap <C-Down> xp`[V`]
+vmap <C-Up> [egv
+vmap <C-Down> ]egv
+
 " Add the virtualenv's site-packages to vim path
 py << EOF
 import os.path
@@ -63,9 +97,11 @@ import sys
 import vim
 if 'VIRTUAL_ENV' in os.environ:
     project_base_dir = os.environ['VIRTUAL_ENV']
-    sys.path.insert(0, project_base_dir)
-    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-    execfile(activate_this, dict(__file__=activate_this))
+else:
+    project_base_dir = '~/.virtualenvs/default'
+sys.path.insert(0, project_base_dir)
+activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+execfile(activate_this, dict(__file__=activate_this))
 EOF
 
 " can switch to other buffer if current buffer is modified
@@ -81,7 +117,7 @@ set dy=lastline
 "set textwidth=78
 set ts=4
 set backspace=indent,eol,start
-"set number " for line number
+set number " for line number
 set sw=4
 set smarttab
 set showmatch
@@ -94,13 +130,19 @@ set fileencodings=utf-8,gbk,ucs-bom,latin1
 " if &t_Co == 256
 " endif
 if has("gui_running")
-    set guioptions-=T
+    set guioptions-=T " no toolbar
+	" set background=light
+	colorscheme wombat256
 else
 	set t_Co=256
+	colorscheme t256
+	" set background=dark
+	" colorscheme wombat256
+	" colorscheme slate
 endif
-colorscheme default
 if has("gui_macvim")
-    " set transparency=10
+    set transparency=5
+	set guifont=Menlo:h14
 	" let macvim_hig_shift_movement = 1
     " swipe is broken in Lion
 	" nmap <SwipeLeft> :bN<CR>
@@ -110,9 +152,6 @@ endif
 set guioptions+=aAce
 
 set colorcolumn=80
-set cindent
-set formatoptions=tqn
-set cino=g0:0(0
 
 set incsearch
 set hlsearch
@@ -127,23 +166,15 @@ vnoremap <tab> %
 
 "set guitablabel=%N\ %f
 
-" for gui
-if has('mac')
-    " set guifont=Anonymous\ Pro:h13
-	set guifont=Ubuntu\ Mono:h14
-else
-    set guifont=Monospace\ 10
-endif
-
 set laststatus=2
 "set statusline=%n\ %1*%h%f%*\ %=%<[%3lL,%2cC]\ %2p%%\ 0x%02B%r%m
-set statusline=%-3.3n%f\[%{strlen(&ft)?&ft:'none'}]%=%-14(%l,%c%V%)%<%P
-
+" set statusline=%-3.3n%f[%{strlen(&ft)?&ft:'none'}]%=%-15(%l,%c%V\ %P)\ %{fugitive#statusline()}
+let g:Powerline_symbols='unicode'
 au BufNewFile,BufRead *.r setf r
 au BufNewFile,BufRead *.r set syntax=r
 
 "set list
-"set listchars=tab:▸\ 
+set listchars=tab:▸\ 
 
 " format paragraph
 nnoremap <leader>q gwip
@@ -169,10 +200,10 @@ filetype plugin on
 filetype indent on
 
 au filetype tex set et sw=2 ts=2
-au filetype tex map <leader>q ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>gq//-1<CR>
-au filetype tex omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
+" au filetype tex map <leader>q ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>gw//-1<CR>
+" au filetype tex omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
 
-"let g:tex_flavor = 'pdflatex'
+let g:tex_flavor = 'pdflatex'
 let g:Tex_CompileRule_pdf = 'pdflatex -interaction=nonstopmode $*'
 let g:Tex_MultipleCompileFormats='pdf'
 
@@ -240,3 +271,78 @@ function! UpdateGtags(f)
     exe 'silent !cd ' . dir . ' && global -u &> /dev/null &'
 endfunc
 
+au FileType notes set tw=78
+let g:notes_directory = '~/Dropbox/Personal/notes'
+let g:notes_suffix = '.txt'
+" let g:notes_indexscript = '~/.vim/bin/xxx'
+
+au! BufRead,BufWrite,BufWritePost,BufNewFile *.org
+au BufEnter *.org call org#SetOrgFileType()
+
+" au FileType python set omnifunc=pythoncomplete#Complete
+" let g:SuperTabDefaultCompletionType = "context"
+" set completeopt=menuone,longest,preview
+let python_highlight_all=1
+
+if exists(":Tabularize")
+  nmap <Leader>a= :Tabularize /=<CR>
+  vmap <Leader>a= :Tabularize /=<CR>
+  nmap <Leader>a: :Tabularize /:\zs<CR>
+  vmap <Leader>a: :Tabularize /:\zs<CR>
+endif
+ 
+" Do command and preserve the search register and cursor position
+function! Preserve(command)
+  " Preparation: save last search, and cursor position.
+  let _s=@/
+  let l = line(".")
+  let c = col(".")
+  " Do the business:
+  execute a:command
+  " Clean up: restore previous search history, and cursor position
+  let @/=_s
+  call cursor(l, c)
+endfunction
+" strip trailing white spaces
+nmap _$ :call Preserve("%s/\\s\\+$//e")<CR>
+" format entire buffer
+nmap _= :call Preserve("normal gg=G")<CR>
+
+" text object according to indent level
+onoremap <silent>ai :<C-U>cal <SID>IndTxtObj(0)<CR>
+onoremap <silent>ii :<C-U>cal <SID>IndTxtObj(1)<CR>
+vnoremap <silent>ai :<C-U>cal <SID>IndTxtObj(0)<CR><Esc>gv
+vnoremap <silent>ii :<C-U>cal <SID>IndTxtObj(1)<CR><Esc>gv
+
+function! s:IndTxtObj(inner)
+  let curline = line(".")
+  let lastline = line("$")
+  let i = indent(line(".")) - &shiftwidth * (v:count1 - 1)
+  let i = i < 0 ? 0 : i
+  if getline(".") !~ "^\\s*$"
+    let p = line(".") - 1
+    let nextblank = getline(p) =~ "^\\s*$"
+    while p > 0 && ((i == 0 && !nextblank) || (i > 0 && ((indent(p) >= i && !(nextblank && a:inner)) || (nextblank && !a:inner))))
+      -
+      let p = line(".") - 1
+      let nextblank = getline(p) =~ "^\\s*$"
+    endwhile
+    normal! 0V
+    call cursor(curline, 0)
+    let p = line(".") + 1
+    let nextblank = getline(p) =~ "^\\s*$"
+    while p <= lastline && ((i == 0 && !nextblank) || (i > 0 && ((indent(p) >= i && !(nextblank && a:inner)) || (nextblank && !a:inner))))
+      +
+      let p = line(".") + 1
+      let nextblank = getline(p) =~ "^\\s*$"
+    endwhile
+    normal! $
+  endif
+endfunction
+
+" edit files in the same dir as the current one
+cnoremap %% <C-R>=expand('%:h').'/'<cr>
+map <leader>ew :e %%
+map <leader>es :sp %%
+map <leader>ev :vsp %%
+map <leader>et :tabe %%
