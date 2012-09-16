@@ -68,7 +68,8 @@ fun SetupVAM()
 		call confirm("Remind yourself that most plugins ship with documentation (README*, doc/*.txt). Its your first source of knowledge. If you can't find the info you're looking for in reasonable time ask maintainers to improve documentation")
 		exec '!p='.shellescape(vam_install_path).'; mkdir -p "$p" && cd "$p" && git clone --depth 1 git://github.com/MarcWeber/vim-addon-manager.git'
 	endif
-	call vam#ActivateAddons(['VimOrganizer','LaTeX-Suite_aka_Vim-LaTeX','fugitive','Gundo','Tagbar','surround','ctrlp','snipmate-snippets','tcomment','EasyMotion','The_NERD_tree','supertab','ack','powerline','unimpaired','Indent_Guides','Tabular'], {'auto_install' : 0})
+	call vam#ActivateAddons(['dwm','vimwiki','LaTeX-Suite_aka_Vim-LaTeX','fugitive','Gundo','Tagbar','surround','ctrlp','snipmate-snippets','tComment','EasyMotion','The_NERD_tree','ack','Powerline','unimpaired','Indent_Guides','Tabular','Solarized'], {'auto_install' : 0})
+	" used addons: tComment
 endf
 call SetupVAM()
 " experimental: run after gui has been started (gvim) [3]
@@ -91,18 +92,18 @@ vmap <C-Up> [egv
 vmap <C-Down> ]egv
 
 " Add the virtualenv's site-packages to vim path
-py << EOF
-import os.path
-import sys
-import vim
-if 'VIRTUAL_ENV' in os.environ:
-    project_base_dir = os.environ['VIRTUAL_ENV']
-else:
-    project_base_dir = '~/.virtualenvs/default'
-sys.path.insert(0, project_base_dir)
-activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-execfile(activate_this, dict(__file__=activate_this))
-EOF
+"py << EOF
+"import os.path
+"import sys
+"import vim
+"if 'VIRTUAL_ENV' in os.environ:
+"    project_base_dir = os.environ['VIRTUAL_ENV']
+"else:
+"    project_base_dir = '~/.virtualenvs/default'
+"sys.path.insert(0, project_base_dir)
+"activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+"execfile(activate_this, dict(__file__=activate_this))
+"EOF
 
 " can switch to other buffer if current buffer is modified
 set hidden
@@ -131,14 +132,12 @@ set fileencodings=utf-8,gbk,ucs-bom,latin1
 " endif
 if has("gui_running")
     set guioptions-=T " no toolbar
-	" set background=light
+	set background=dark
 	colorscheme wombat256
 else
 	set t_Co=256
-	colorscheme t256
-	" set background=dark
-	" colorscheme wombat256
-	" colorscheme slate
+	set background=dark
+	colorscheme wombat256
 endif
 if has("gui_macvim")
     set transparency=5
@@ -169,12 +168,12 @@ vnoremap <tab> %
 set laststatus=2
 "set statusline=%n\ %1*%h%f%*\ %=%<[%3lL,%2cC]\ %2p%%\ 0x%02B%r%m
 " set statusline=%-3.3n%f[%{strlen(&ft)?&ft:'none'}]%=%-15(%l,%c%V\ %P)\ %{fugitive#statusline()}
-let g:Powerline_symbols='unicode'
+let g:Powerline_symbols='fancy'
 au BufNewFile,BufRead *.r setf r
 au BufNewFile,BufRead *.r set syntax=r
 
-"set list
-set listchars=tab:▸\ 
+set list
+set listchars=tab:»\ ,trail:·,extends:»,precedes:«
 
 " format paragraph
 nnoremap <leader>q gwip
@@ -346,3 +345,14 @@ map <leader>ew :e %%
 map <leader>es :sp %%
 map <leader>ev :vsp %%
 map <leader>et :tabe %%
+
+" vimwiki stuff
+let g:vimwiki_use_mouse = 1
+let g:vimwiki_list = [{ 'path': '~/vimwiki',
+  \ 'path_html': '~/Sites/vimwiki/',
+  \ 'template_path': '~/Sites/vimwiki/template/' }]
+
+" for commentary
+if exists("g:loaded_commentary")
+	autocmd FileType r set commentstring=#\ %s
+endif
