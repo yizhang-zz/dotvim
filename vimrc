@@ -2,21 +2,22 @@ set nocompatible
 set nobackup
 filetype off
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim/
+call vundle#begin()
 
-Bundle 'gmarik/vundle'
-Bundle 'tpope/vim-fugitive'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'Lokaltog/powerline'
-Bundle 'L9'
-Bundle 'FuzzyFinder'
-Bundle 'vim-scripts/tComment'
-Bundle 'terryma/vim-multiple-cursors'
+Plugin 'gmarik/Vundle.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'Lokaltog/vim-easymotion'
+Plugin 'bling/vim-airline'
+Plugin 'L9'
+Plugin 'FuzzyFinder'
+Plugin 'vim-scripts/tComment'
+Plugin 'terryma/vim-multiple-cursors'
+
+call vundle#end()
 
 filetype plugin indent on
 
-set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 " set relativenumber
 " set undofile
 set visualbell
@@ -108,15 +109,11 @@ set fileencodings=utf-8,gbk,ucs-bom,latin1
 if has("gui_running")
     set guioptions-=T " no toolbar
 	set background=dark
-	colorscheme solarized
 else
 	set t_Co=256
 	set background=dark
-	colorscheme solarized
 endif
 if has("gui_macvim")
-	set guifont=Droid\ Sans\ Mono:h14
-	colorscheme monokai
 	" let macvim_hig_shift_movement = 1
     " swipe is broken in Lion
 	" nmap <SwipeLeft> :bN<CR>
@@ -143,7 +140,6 @@ vnoremap <tab> %
 set laststatus=2
 "set statusline=%n\ %1*%h%f%*\ %=%<[%3lL,%2cC]\ %2p%%\ 0x%02B%r%m
 " set statusline=%-3.3n%f[%{strlen(&ft)?&ft:'none'}]%=%-15(%l,%c%V\ %P)\ %{fugitive#statusline()}
-let g:Powerline_symbols='fancy'
 au BufNewFile,BufRead *.r setf r
 au BufNewFile,BufRead *.r set syntax=r
 
