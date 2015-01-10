@@ -1,5 +1,22 @@
 set nocompatible
 set nobackup
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+Bundle 'tpope/vim-fugitive'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'Lokaltog/powerline'
+Bundle 'L9'
+Bundle 'FuzzyFinder'
+Bundle 'vim-scripts/tComment'
+Bundle 'terryma/vim-multiple-cursors'
+
+filetype plugin indent on
+
+set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 " set relativenumber
 " set undofile
 set visualbell
@@ -7,7 +24,7 @@ set ttyfast
 set title " change the terminal's title
 syntax on
 
-set clipboard=unnamed
+" set clipboard=unnamed
 " Uncomment the following to have Vim jump to the last position when
 " reopening a file
 if has("autocmd")
@@ -54,32 +71,6 @@ inoremap <D-CR> <ESC>o
 set modelines=5
 set popt=paper:letter
 
-let g:vim_addon_manager = {}
-let g:vim_addon_manager.plugin_sources = {}
-let g:vim_addon_manager.plugin_sources['minibufexpl-improved'] = { 'type':'git', 'url':'git://github.com/fholgado/minibufexpl.vim.git'}
-
-fun SetupVAM()
-	" YES, you can customize this vam_install_path path and everything still works!
-	let vam_install_path = expand('$HOME') . '/.vim/addons'
-	exec 'set runtimepath+='.vam_install_path.'/vim-addon-manager'
-
-	if !isdirectory(vam_install_path.'/vim-addon-manager') && 1 == confirm("git clone VAM into ".vam_install_path."?","&Y\n&N")
-		" I'm sorry having to add this reminder. Eventually it'll pay off.
-		call confirm("Remind yourself that most plugins ship with documentation (README*, doc/*.txt). Its your first source of knowledge. If you can't find the info you're looking for in reasonable time ask maintainers to improve documentation")
-		exec '!p='.shellescape(vam_install_path).'; mkdir -p "$p" && cd "$p" && git clone --depth 1 git://github.com/MarcWeber/vim-addon-manager.git'
-	endif
-	call vam#ActivateAddons(['dwm','vimwiki','LaTeX-Suite_aka_Vim-LaTeX','fugitive','Gundo','Tagbar','surround','ctrlp','snipmate-snippets','tComment','EasyMotion','The_NERD_tree','ack','Powerline','unimpaired','Indent_Guides','Tabular','Solarized'], {'auto_install' : 0})
-	" used addons: tComment
-endf
-call SetupVAM()
-" experimental: run after gui has been started (gvim) [3]
-" option1:  au VimEnter * call SetupVAM()
-" option2:  au GUIEnter * call SetupVAM()
-" See BUGS sections below [*]
-
-"call pathogen#runtime_append_all_bundles()
-"call pathogen#helptags()
-
 " text bubbling: single lines
 " nmap <C-Down> ddp 
 " nmap <C-Up> ddkP
@@ -90,20 +81,6 @@ nmap <C-Down> ]e
 " vmap <C-Down> xp`[V`]
 vmap <C-Up> [egv
 vmap <C-Down> ]egv
-
-" Add the virtualenv's site-packages to vim path
-"py << EOF
-"import os.path
-"import sys
-"import vim
-"if 'VIRTUAL_ENV' in os.environ:
-"    project_base_dir = os.environ['VIRTUAL_ENV']
-"else:
-"    project_base_dir = '~/.virtualenvs/default'
-"sys.path.insert(0, project_base_dir)
-"activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-"execfile(activate_this, dict(__file__=activate_this))
-"EOF
 
 " can switch to other buffer if current buffer is modified
 set hidden
@@ -128,20 +105,18 @@ set showmatch
 
 set fileencodings=utf-8,gbk,ucs-bom,latin1
 
-" if &t_Co == 256
-" endif
 if has("gui_running")
     set guioptions-=T " no toolbar
 	set background=dark
-	colorscheme wombat256
+	colorscheme solarized
 else
 	set t_Co=256
 	set background=dark
-	colorscheme wombat256
+	colorscheme solarized
 endif
 if has("gui_macvim")
-    set transparency=5
-	set guifont=Menlo:h14
+	set guifont=Droid\ Sans\ Mono:h14
+	colorscheme monokai
 	" let macvim_hig_shift_movement = 1
     " swipe is broken in Lion
 	" nmap <SwipeLeft> :bN<CR>
